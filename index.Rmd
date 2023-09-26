@@ -1,7 +1,7 @@
 ---
 title: "Gov 50 Final Project"
-author: "Your Name Here"
-description: "My final project"
+author: "Nina Howe-Goldstein"
+description: "My final project: Revised Common Lectionary Data"
 output:
   distill::distill_article:
     self_contained: false
@@ -11,4 +11,4 @@ output:
 
 ## Project thoughts
 
-I am interested in exploring data related to...
+Written in the late 1980s, the Revised Common Lectionary is a three-year cycle of Bible readings observed by American Catholics, Episcopalians, Lutherans, Presbyterians, and Methodists. Each Sunday's entry includes a passage from the Old Testament, a Psalm, a passage from one of the Epistles, and from one of the four Gospels. The goal is for any given congregation reading from the RCL to, over three years, hear the entirety of the Gospels and a substantial chunk of the (much longer) Old Testament. Vanderbilt University maintains materials from the RCL online, including CSV files. My project would perform data analysis on the RCL, and possibly a replication (via data mutation/rearranging) of what is called the "Reverse Common Lectionary."  
