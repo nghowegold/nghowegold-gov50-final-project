@@ -20,6 +20,19 @@ Proposal:
 
 When are humans better at helicopter-spotting than a Raspberry Pi webcam? In this study, I plan to examine user-submitted "copter spots" to examine the extent to which automated sight is better than human encounters. I hypothesize that human copter-spotting productivity is less influenced by weather events than the webcam, since humans benefit from audio/tactile clues which the camera does not. (Some copter-spotting enthusiasts can identify the type of helicopter from sound alone!) On cloudy/rainy days, I expect that human copter-spotting productivity will exceed (or at least, will vary less) than the webcam, whose vision is more likely to be obscured. On sunny days, the camera has an easier time spotting and identifying helicopters from a distance, leading to more reported "spots." My sample is the data of every reported helicopter sighting in my hometown of Washington, DC in 2022 (numbering the thousands), compiled by the Twitter account @HelicoptersofDC. In 2022, the webcam @DCskycam, which automatically submits spots with its best guess about the type of helicopter, was among the most prolific users. Although the data was anonymized by removing the reporting account, I can isolate the immobile skycam using the longitudinal and latitudinal data accompanying each spot. The explanatory variable will be my addition (an = 0 for sunny days, and = 1 for cloudy ones), based on federal weather data for DC. If I observe normal/increased human copter-spotting productivity on cloudy days, and decreased webcam productivity, my hypothesis would be supported. Conversely, if I observe no correllary between human or webcam productivity during the "treatment" (cloudy days), this would provide evidence against my hypothesis, because it would indicate a lack of relationship between weather and copter-spotting productivity.  
 
+```{r}
+library(tidyverse)
+library(lubridate)
+copterspotter <- read.csv("copterspotter 2 - tidyer - copterspotter.csv")
+copterspotter$Date <- ymd(copterspotter$Date)
+
+copterspotter |>
+  group_by(Date) |>
+  summarize(n = n()) |>
+  ggplot(mapping = aes(x = Date, y = n)) +
+  geom_line()
+
+```
 
 
 
