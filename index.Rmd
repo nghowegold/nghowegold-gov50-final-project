@@ -33,6 +33,50 @@ copterspotter |>
   geom_line()
 
 ```
+This ^^ is a failed data visualization. Not sure where it went wrong. Working on it.
+
+Here's the real FPM3:
+
+
+```{r}
+copterspotter_sky_variable <- copterspotter |>
+  mutate(skycam_binary_long = if_else(
+    Lon >= -77.024 & Lon <= -77.026, "1", "0"
+  )) |>
+  mutate(skycam_binary_lat = if_else(
+    Lat >= 38.904 & Lat <= 38.906, "1", "0"
+  )) |>
+  mutate(skycam_binary = if_else(
+    skycam_binary_long == 1 & skycam_binary_lat == 1, "1", "0"
+  )) |>
+  mutate(skycam = if_else(
+    skycam_binary == 1, "Skycam Spot", "Not a Skycam Spot"
+  ))
+
+##It was at this moment that the Gov50 student realized that her project idea wasn't gonna work
+
+##There are no skycam spots in this data
+
+##Whoops
+
+##Time to try something else!
+
+copterspotter_clean <- copterspotter |>
+  filter(Lon <= -70) |>
+  filter(Lat <= 39) ##Removing some outliers
+  
+copterspotter_clean |>
+  ggplot(mapping = aes(x = Lat, y = Lon)) +
+  geom_point(
+    mapping = aes(alpha = .1, color = Type)
+  ) +
+  labs(
+    x = "Latitude",
+    y = "Longitude",
+    title = "Spread of Copter Spots in D.C. in 2022"
+  )
+
+```
 
 
 
