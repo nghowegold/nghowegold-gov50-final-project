@@ -8,16 +8,6 @@ output:
 ---
 
 
-
-## Project thoughts
-
-Written in the late 1980s, the Revised Common Lectionary is a three-year cycle of Bible readings observed by American Catholics, Episcopalians, Lutherans, Presbyterians, and Methodists. Each Sunday's entry includes a passage from the Old Testament, a Psalm, a passage from one of the Epistles, and from one of the four Gospels. The goal is for any given congregation reading from the RCL to, over three years, hear the entirety of the Gospels and a substantial chunk of the (much longer) Old Testament. Vanderbilt University maintains materials from the RCL online, including CSV files. My project would perform data analysis on the RCL, and possibly a replication (via data mutation/rearranging) of what is called the "Reverse Common Lectionary."  
-
-Update: Not doing that anymore!
-
-
-Proposal:
-
 When are humans better at helicopter-spotting than a Raspberry Pi webcam? In this study, I plan to examine user-submitted "copter spots" to examine the extent to which automated sight is better than human encounters. I hypothesize that human copter-spotting productivity is less influenced by weather events than the webcam, since humans benefit from audio/tactile clues which the camera does not. (Some copter-spotting enthusiasts can identify the type of helicopter from sound alone!) On cloudy/rainy days, I expect that human copter-spotting productivity will exceed (or at least, will vary less) than the webcam, whose vision is more likely to be obscured. On sunny days, the camera has an easier time spotting and identifying helicopters from a distance, leading to more reported "spots." My sample is the data of every reported helicopter sighting in my hometown of Washington, DC in 2022 (numbering the thousands), compiled by the Twitter account @HelicoptersofDC. In 2022, the webcam @DCskycam, which automatically submits spots with its best guess about the type of helicopter, was among the most prolific users. Although the data was anonymized by removing the reporting account, I can isolate the immobile skycam using the longitudinal and latitudinal data accompanying each spot. The explanatory variable will be my addition (an = 0 for sunny days, and = 1 for cloudy ones), based on federal weather data for DC. If I observe normal/increased human copter-spotting productivity on cloudy days, and decreased webcam productivity, my hypothesis would be supported. Conversely, if I observe no correllary between human or webcam productivity during the "treatment" (cloudy days), this would provide evidence against my hypothesis, because it would indicate a lack of relationship between weather and copter-spotting productivity.  
 
 ```{r}
@@ -78,10 +68,29 @@ copterspotter_clean |>
 
 ```
 
+Final Project Milestone 4: Add results from one analysis
+
+Analyzing the number of helicopters spotted every day in DC over 2022, during which D.C.'s non-voting representative in Congress, Eleanor Holmes Norton, introduced several pieces of major legislation and policy meant to reduce helicopter noise pollution. My theory rests on the idea that self-reporting will only catch "obnoxious" helicopters generating noise pollution, and so the self-reported data will be a viable way to measure the impact of anti-helicopter legislation. 
+
+The red vertical lines indicate the days that Rep. Norton introduced the legislation or policy.
 
 
+```{r}
+copterspotter_clean_compiled <- copterspotter_clean|>
+  count(Date)
 
+copterspotter_clean_compiled |>
+  ggplot(aes(x = Date, y = n)) +
+  geom_point() +
+  geom_smooth() +
+  ylab("Number of Helicopter Spots Per Day") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-03-23"))), color = "indianred") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-05-13"))), color = "indianred") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-07-27"))), color = "indianred")
 
+```
+
+The visualization indicates that fewer helicopters, on average, were seen after Rep. Norton introduced a policy or piece of legislation meant to limit helicopter noise pollution. (So far, though, she has not been successful in passing any of her major bills that would require helicopters to fly at a much higher altitude.) The results indicate a possibility that fewer helicopters flew at a lower, "polluting" altitude that would have made them easy for copter-spotters to find and report. 
 
 
 
