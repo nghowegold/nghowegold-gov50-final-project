@@ -93,6 +93,9 @@ copterspotter_clean_compiled |>
 The visualization indicates that fewer helicopters, on average, were seen after Rep. Norton introduced a policy or piece of legislation meant to limit helicopter noise pollution. (So far, though, she has not been successful in passing any of her major bills that would require helicopters to fly at a much higher altitude.) The results indicate a possibility that fewer helicopters flew at a lower, "polluting" altitude that would have made them easy for copter-spotters to find and report. 
 
 
+```{r}
+copterspotter_clean
+```
 
 
 
