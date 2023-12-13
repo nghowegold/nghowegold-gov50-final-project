@@ -1,78 +1,52 @@
 ---
 title: "Gov 50 Final Project"
 author: "Nina Howe-Goldstein"
-description: "My final project: humans versus webcams in copter-spotting"
+description: "My final project: D.C. copterspotting"
 output:
   distill::distill_article:
     self_contained: false
 ---
-
-
-When are humans better at helicopter-spotting than a Raspberry Pi webcam? In this study, I plan to examine user-submitted "copter spots" to examine the extent to which automated sight is better than human encounters. I hypothesize that human copter-spotting productivity is less influenced by weather events than the webcam, since humans benefit from audio/tactile clues which the camera does not. (Some copter-spotting enthusiasts can identify the type of helicopter from sound alone!) On cloudy/rainy days, I expect that human copter-spotting productivity will exceed (or at least, will vary less) than the webcam, whose vision is more likely to be obscured. On sunny days, the camera has an easier time spotting and identifying helicopters from a distance, leading to more reported "spots." My sample is the data of every reported helicopter sighting in my hometown of Washington, DC in 2022 (numbering the thousands), compiled by the Twitter account @HelicoptersofDC. In 2022, the webcam @DCskycam, which automatically submits spots with its best guess about the type of helicopter, was among the most prolific users. Although the data was anonymized by removing the reporting account, I can isolate the immobile skycam using the longitudinal and latitudinal data accompanying each spot. The explanatory variable will be my addition (an = 0 for sunny days, and = 1 for cloudy ones), based on federal weather data for DC. If I observe normal/increased human copter-spotting productivity on cloudy days, and decreased webcam productivity, my hypothesis would be supported. Conversely, if I observe no correllary between human or webcam productivity during the "treatment" (cloudy days), this would provide evidence against my hypothesis, because it would indicate a lack of relationship between weather and copter-spotting productivity.  
 
 ```{r}
 library(tidyverse)
 library(lubridate)
 copterspotter <- read.csv("copterspotter 2 - tidyer - copterspotter.csv")
 copterspotter$Date <- ymd(copterspotter$Date)
-
-copterspotter |>
-  group_by(Date) |>
-  summarize(n = n()) |>
-  ggplot(mapping = aes(x = Date, y = n)) +
-  geom_line()
-
-```
-This ^^ is a failed data visualization. Not sure where it went wrong. Working on it.
-
-Here's the real FPM3:
-
-
-```{r}
-copterspotter_sky_variable <- copterspotter |>
-  mutate(skycam_binary_long = if_else(
-    Lon >= -77.024 & Lon <= -77.026, "1", "0"
-  )) |>
-  mutate(skycam_binary_lat = if_else(
-    Lat >= 38.904 & Lat <= 38.906, "1", "0"
-  )) |>
-  mutate(skycam_binary = if_else(
-    skycam_binary_long == 1 & skycam_binary_lat == 1, "1", "0"
-  )) |>
-  mutate(skycam = if_else(
-    skycam_binary == 1, "Skycam Spot", "Not a Skycam Spot"
-  ))
-
-##It was at this moment that the Gov50 student realized that her project idea wasn't gonna work
-
-##There are no skycam spots in this data
-
-##Whoops
-
-##Time to try something else!
-
 copterspotter_clean <- copterspotter |>
   filter(Lon <= -70) |>
-  filter(Lat <= 39) ##Removing some outliers
-  
-copterspotter_clean |>
-  ggplot(mapping = aes(x = Lat, y = Lon)) +
-  geom_point(
-    mapping = aes(alpha = .1, color = Type)
-  ) +
-  labs(
-    x = "Latitude",
-    y = "Longitude",
-    title = "Spread of Copter Spots in D.C. in 2022"
-  )
-
+  filter(Lat <= 39)
 ```
 
-Final Project Milestone 4: Add results from one analysis
+Introduction:
 
-Analyzing the number of helicopters spotted every day in DC over 2022, during which D.C.'s non-voting representative in Congress, Eleanor Holmes Norton, introduced several pieces of major legislation and policy meant to reduce helicopter noise pollution. My theory rests on the idea that self-reporting will only catch "obnoxious" helicopters generating noise pollution, and so the self-reported data will be a viable way to measure the impact of anti-helicopter legislation. 
+Helicopters are everywhere in my hometown of Washington, D.C. On any given day, four different police departments, news choppers, medivacs, the Park Police, the Army, the Navy, the Air Force, the National Guard, Homeland Security, and the elite Marine squadron that transports the president might be flying around the District. Subject to little scrutiny because of their broad national security mandate – most don’t even have to turn on their transponders – noisy helicopters become a nuisance and a spectacle for bored Washingtonians. During the pandemic, one irritated teleworker founded Helicopters of D.C., a helicopter tracking site that creates a daily user-submitted map of sightings across the DMV. 
 
-The red vertical lines indicate the days that Rep. Norton introduced the legislation or policy.
+I love Helicopters of D.C. I’ve registered more than 300 helicopter sightings with them – including one incredible afternoon at the airport when my flight was delayed by six hours, and I parked myself by the window to watch takeoffs and landings at Joint Base Anacostia-Bolling across the river. (That pales in comparison to the site’s highest-ranked spotters, including an engineer at the Department of Transportation with a great office view and more than 5000 spots to her name.)
+
+But the original purpose of Helicopters of D.C. was, in part, to track noise pollution. When helicopters fly low – which they almost always do, without consequence – they are extremely loud and obnoxious. To address locals’ complaints, D.C.’s non-voting Congressional delegate Eleanor Holmes Norton (who is perhaps most famous for putting out a bizarre statement denying involvement in the escape of six zebras from a Maryland zoo in 2021) introduced a series of bills in the summer of 2022 to standardize helicopter regulations. Norton’s bills would require helicopters to fly at the maximum altitude permitted by the Federal Aviation Administration, with limited exceptions, and instituted a trial noise complaint system for D.C. residents. Although Norton’s bills are still working their way through Congress, given that the lawmakers responsible for voting on the new regulations are also affected by D.C. copter noise pollution, I wondered if there might have been a reduction in obnoxious helicopter use after each bill’s introduction.
+
+My hypothesis was that Helicopters of D.C.’s sighting data from 2022 would show a slight reduction in spottings, indicative of a reduction in obnoxious helicopter use — since a user is more likely to be prompted by the noise of a low-flying helicopter to look up and take a picture. (Based on anecdotal experience from living in D.C., I also guessed that when broken down by operator, the data would show no reduction in obnoxious use by the Air Force 1st Helicopter Squadron. Their UH-1N Hueys are some of the worst offenders.) 
+
+
+Data:
+
+In its end-of-year report for 2022, Helicopters of D.C. also published an anonymized table of the full year’s data. I quickly learned that it was a huge pain to wrangle: someone had submitted a few helicopter spots from Madrid as a joke, which threw off my first data visualization until I could `select` them out, and I had to install the Lubridate package to change the `Date` column from character data to dates that R would recognize. 
+
+To make matters worse, I had hoped to do a difference-in-differences observational study on the spotting capabilities of human users versus the prolific Skycam robot, a Raspberry Pi webcam which automatically submits helicopter sightings from its perch on a downtown window. I figured that, even without users’ names included in the anonymized data table, I could isolate the longitudinal and latitudinal coordinates of the Skycam’s city block to find its spots. But in anonymizing the data, Helicopters of D.C. instead grouped some of the sightings into hyper-specific coordinate pairs, and it would have been near-impossible to isolate Skycam from the human users. 
+
+(An example of the anonymizing job: the Capitol Heights metro station, at the coordinates 38.88973846, -76.91339493, appears 37 times in the data set.)
+
+```{r}
+copterspotter_clean |>
+  filter(Lat == "38.88973846") |>
+  count() |>
+  knitr::kable()
+```
+
+I pivoted to a before-and-after observational study on the number of helicopter sightings per day, in which the date of each Norton bill’s introduction in Congress served as the treatment, and the number of daily sightings was the dependent variable.
+
+
+Results:
 
 
 ```{r}
@@ -89,17 +63,83 @@ copterspotter_clean_compiled |>
   geom_vline(aes(xintercept = as.numeric(as.Date("2022-07-27"))), color = "indianred")
 
 ```
+And the data faceted to common types of helicopter:
 
-The visualization indicates that fewer helicopters, on average, were seen after Rep. Norton introduced a policy or piece of legislation meant to limit helicopter noise pollution. (So far, though, she has not been successful in passing any of her major bills that would require helicopters to fly at a much higher altitude.) The results indicate a possibility that fewer helicopters flew at a lower, "polluting" altitude that would have made them easy for copter-spotters to find and report. 
-
+The VH3D, the presidential fleet "Sea King":
 
 ```{r}
-copterspotter_clean
+copterspotter_VH3D <- copterspotter_clean |>
+  filter(Type == "VH3D")
+
+copterspotter_VH3D_vis <- copterspotter_VH3D |>
+  count(Date)
+
+copterspotter_VH3D_vis |>
+  ggplot(aes(x = Date, y = n)) +
+  geom_point() +
+  geom_smooth() +
+  ylab("Number of Presidential Copter Spots Per Day") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-03-23"))), color = "indianred") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-05-13"))), color = "indianred") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-07-27"))), color = "indianred") 
 ```
 
+The Coast Guard's MH65:
 
+```{r}
+copterspotter_MH65 <- copterspotter_clean |>
+  filter(Type == "MH65")
 
+copterspotter_MH65_vis <- copterspotter_MH65 |>
+  count(Date)
 
+copterspotter_MH65_vis |>
+  ggplot(aes(x = Date, y = n)) +
+  geom_point() +
+  geom_smooth() +
+  ylab("Number of Coast Guard Copter Spots Per Day") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-03-23"))), color = "indianred") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-05-13"))), color = "indianred") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-07-27"))), color = "indianred") 
+```
+
+The B06, used by both news crews (in Maryland and Virginia) and the Park Police (in D.C.):
+
+```{r}
+copterspotter_B06 <- copterspotter_clean |>
+  filter(Type == "B06")
+
+copterspotter_B06_vis <- copterspotter_B06 |>
+  count(Date)
+
+copterspotter_B06_vis |>
+  ggplot(aes(x = Date, y = n)) +
+  geom_point() +
+  geom_smooth() +
+  ylab("Number of Park Police/News Copter Spots Per Day") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-03-23"))), color = "indianred") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-05-13"))), color = "indianred") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-07-27"))), color = "indianred") 
+```
+
+The UH1N, used by the Air Force First Squadron:
+
+```{r}
+copterspotter_UH1N <- copterspotter_clean |>
+  filter(Type == "UH1N")
+
+copterspotter_UH1N_vis <- copterspotter_UH1N |>
+  count(Date)
+
+copterspotter_UH1N_vis |>
+  ggplot(aes(x = Date, y = n)) +
+  geom_point() +
+  geom_smooth() +
+  ylab("Number of Air Force Copter Spots Per Day") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-03-23"))), color = "indianred") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-05-13"))), color = "indianred") +
+  geom_vline(aes(xintercept = as.numeric(as.Date("2022-07-27"))), color = "indianred") 
+```
 
 
 
