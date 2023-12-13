@@ -63,7 +63,7 @@ copterspotter_clean_compiled |>
   geom_vline(aes(xintercept = as.numeric(as.Date("2022-07-27"))), color = "indianred")
 
 ```
-And the data faceted to common types of helicopter:
+And the data faceted to three common types of helicopter:
 
 The VH3D, the presidential fleet "Sea King":
 
@@ -103,25 +103,6 @@ copterspotter_MH65_vis |>
   geom_vline(aes(xintercept = as.numeric(as.Date("2022-07-27"))), color = "indianred") 
 ```
 
-The B06, used by both news crews (in Maryland and Virginia) and the Park Police (in D.C.):
-
-```{r}
-copterspotter_B06 <- copterspotter_clean |>
-  filter(Type == "B06")
-
-copterspotter_B06_vis <- copterspotter_B06 |>
-  count(Date)
-
-copterspotter_B06_vis |>
-  ggplot(aes(x = Date, y = n)) +
-  geom_point() +
-  geom_smooth() +
-  ylab("Number of Park Police/News Copter Spots Per Day") +
-  geom_vline(aes(xintercept = as.numeric(as.Date("2022-03-23"))), color = "indianred") +
-  geom_vline(aes(xintercept = as.numeric(as.Date("2022-05-13"))), color = "indianred") +
-  geom_vline(aes(xintercept = as.numeric(as.Date("2022-07-27"))), color = "indianred") 
-```
-
 The UH1N, used by the Air Force First Squadron:
 
 ```{r}
@@ -141,5 +122,9 @@ copterspotter_UH1N_vis |>
   geom_vline(aes(xintercept = as.numeric(as.Date("2022-07-27"))), color = "indianred") 
 ```
 
+The main regression indicates some relationship between the introduction of anti-helicopter legislation and decreased sightings. 
 
+It's difficult to tell concretely with a small data set -- we can see the regression line driven upwards by forty- and fifty-sighting days. Human error also definitely plays a role. I'm using the quantified observations of helicopter enthusiasts as a stand-in for material that even my congresswoman can't access from the FAA. 
+
+But the faceted data also indicates which 
 
